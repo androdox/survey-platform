@@ -31,7 +31,10 @@ export const QuestionEditor = ({
 
       options:
         type === "MULTIPLE"
-          ? options.split(",")
+          ? options
+              .split(",")
+              .map(o => o.trim())
+              .filter(Boolean)
           : undefined
 
     }

@@ -46,10 +46,10 @@ export const ManageSurveysPage = () => {
 
                     <button
                         className="btn btn-danger me-2"
-                        onClick={() => {
+                        onClick={async () => {
 
-                            surveyService.delete(s.id)
-                            reload()
+                            await surveyService.delete(s.id)
+                            await reload()
 
                         }}
                     >
@@ -65,10 +65,10 @@ export const ManageSurveysPage = () => {
 
                     <button
                         className="btn btn-secondary"
-                        onClick={() => {
+                        onClick={async () => {
 
-                            surveyService.toggle(s.id)
-                            reload()
+                            await surveyService.toggle(s.id)
+                            await reload()
 
                         }}
                     >

@@ -1,26 +1,25 @@
-import { useEffect, useState } from "react"
-import { responseService } from "../services/responseService"
-import type { SurveyResponse } from "../types/survey"
+import { useEffect, useState } from "react";
+import { responseService } from "../services/responseService";
+import type { SurveyResponse } from "../types/survey";
 
 export const useResponses = (surveyId: string) => {
-
-  const [responses, setResponses] =
-    useState<SurveyResponse[]>([])
+  const [responses, setResponses] = useState<SurveyResponse[]>([]);
 
   useEffect(() => {
+    if (!surveyId) return;
 
-    const all =
-      responseService.getAll()
+    const loadResponses = async () => {
+      try {
+        const data = await responseService.getBySurveyId(surveyId);
+        setResponses(data);
+      } catch (error) {
+        console.error("Error loading responses:", error);
+        setResponses([]);
+      }
+    };
 
-    const filtered =
-      all.filter(
-        r => r.surveyId === surveyId
-      )
+    loadResponses();
+  }, [surveyId]);
 
-    setResponses(filtered)
-
-  }, [surveyId])
-
-  return { responses }
-
-}
+  return { responses };
+};

@@ -1,44 +1,23 @@
-import type { SurveyResponse } from "../types/survey"
+import type { SurveyResponse } from "../types/survey";
+import axios from "axios";
 
-const STORAGE_KEY = "responses"
+const API_URL = "http://localhost:3000"; // URL de tu backend
 
 class ResponseService {
 
-  getAll(): SurveyResponse[] {
-
-    const data =
-      localStorage.getItem(STORAGE_KEY)
-
-    return data
-      ? JSON.parse(data)
-      : []
-
+  // Guardar una respuesta de encuesta en el backend
+  async add(response: { surveyId: string; answers: { questionId: string; value: string | number }[] }): Promise<SurveyResponse> {
+    const res = await axios.post(`${API_URL}/responses`, response);
+    return res.data; // Devuelve la respuesta creada
   }
 
-  add(response: SurveyResponse) {
-
-    const responses = this.getAll()
-
-    responses.push(response)
-
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(responses)
-    )
-
-  }
-
-  getBySurveyId(surveyId: string): SurveyResponse[] {
-
-    return this
-      .getAll()
-      .filter(
-        r => r.surveyId === surveyId
-      )
-
+  // Obtener todas las respuestas de una encuesta
+  async getBySurveyId(surveyId: string): Promise<SurveyResponse[]> {
+    // Ruta backend definida como /responses/:surveyId
+    const res = await axios.get(`${API_URL}/responses/${surveyId}`);
+    return res.data; // Devuelve un arreglo de SurveyResponse
   }
 
 }
 
-export const responseService =
-  new ResponseService()
+export const responseService = new ResponseService();

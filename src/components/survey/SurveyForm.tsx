@@ -29,7 +29,12 @@ export const SurveyForm = ({
 
             setTitle(surveyToEdit.title)
             setDescription(surveyToEdit.description)
-            setQuestions(surveyToEdit.questions)
+            setQuestions(
+              surveyToEdit.questions.map(q => ({
+                ...q,
+                options: q.options || []
+              }))
+            )
 
         }
 
@@ -183,7 +188,7 @@ export const SurveyForm = ({
 
     }
 
-    const save = () => {
+    const save = async () => {
 
         const survey: Survey = {
 
@@ -200,11 +205,11 @@ export const SurveyForm = ({
             questions
 
         }
-
+        console.log("Saving survey:", surveyToEdit)   
         if (surveyToEdit)
-            surveyService.update(survey)
+            await surveyService.update(survey)
         else
-            surveyService.create(survey)
+            await surveyService.create(survey)
 
         setTitle("")
         setDescription("")

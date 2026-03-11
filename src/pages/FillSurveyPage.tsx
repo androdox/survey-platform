@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import { surveyService } from "../services/surveyService"
 import { responseService } from "../services/responseService"
@@ -15,13 +15,39 @@ export const FillSurveyPage = () => {
 
   const { id } = useParams()
 
-  const survey: Survey | undefined =
-    surveyService
-      .getAll()
-      .find(s => s.id === id)
-
+  const [survey, setSurvey] =
+    useState<Survey | null>(null)
+  const [loading, setLoading] =
+    useState(true)
   const [answers, setAnswers] =
     useState<Answer[]>([])
+
+  useEffect(() => {
+    if (!id) {
+      setSurvey(null)
+      setLoading(false)
+      return
+    }
+
+    const loadSurvey = async () => {
+      setLoading(true)
+      try {
+        const data = await surveyService.getAll()
+        const found = data.find(s => s.id === id) || null
+        setSurvey(found)
+      } catch (error) {
+        console.error("Error cargando encuesta:", error)
+        setSurvey(null)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadSurvey()
+  }, [id])
+
+  if (loading)
+    return <div>Cargando encuesta...</div>
 
   if (!survey)
     return <div>Encuesta no encontrada</div>

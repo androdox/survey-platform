@@ -1,78 +1,34 @@
-import type { Survey } from "../types/survey"
+import type { Survey } from "../types/survey";
+import axios from "axios";
 
-const KEY = "surveys"
+const API_URL = "http://localhost:3000"; // URL de tu backend
 
 class SurveyService {
 
-    getAll(): Survey[] {
+  async getAll(): Promise<Survey[]> {
+    const res = await axios.get(`${API_URL}/surveys`);
+    return res.data; // ya viene del backend
+  }
 
-        const data =
-            localStorage.getItem(KEY)
+  async create(survey: Survey): Promise<Survey> {
+    const res = await axios.post(`${API_URL}/surveys`, survey);
+    return res.data;
+  }
 
-        return data
-            ? JSON.parse(data)
-            : []
+  async update(updated: Survey): Promise<Survey> {
+    const res = await axios.put(`${API_URL}/surveys/${updated.id}`, updated);
+    return res.data;
+  }
 
-    }
+  async delete(id: string): Promise<void> {
+    await axios.delete(`${API_URL}/surveys/${id}`);
+  }
 
-    save(data: Survey[]) {
-
-        localStorage.setItem(
-            KEY,
-            JSON.stringify(data)
-        )
-
-    }
-
-    create(survey: Survey) {
-
-        const surveys = this.getAll()
-
-        surveys.push(survey)
-
-        this.save(surveys)
-
-    }
-
-    delete(id: string) {
-
-        const surveys =
-            this.getAll().filter(
-                s => s.id !== id
-            )
-
-        this.save(surveys)
-
-    }
-
-    toggle(id: string) {
-
-        const surveys =
-            this.getAll().map(s =>
-                s.id === id
-                    ? { ...s, active: !s.active }
-                    : s
-            )
-
-        this.save(surveys)
-
-    }
-
-    update(updated: Survey) {
-
-        const surveys = this.getAll()
-
-        const newList = surveys.map(s =>
-            s.id === updated.id
-                ? updated
-                : s
-        )
-
-        this.save(newList)
-
-    }
+  async toggle(id: string): Promise<Survey> {
+    const res = await axios.patch(`${API_URL}/surveys/${id}/toggle`);
+    return res.data;
+  }
 
 }
 
-export const surveyService =
-    new SurveyService()
+export const surveyService = new SurveyService();
